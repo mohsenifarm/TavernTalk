@@ -52,6 +52,7 @@ def profile(request):
 
 def add_profile_photo(request, profile_id):
     photo_file = request.FILES.get('photo-file', None)
+    print('photo_file')
     if photo_file:
         session = boto3.Session(profile_name='taverntalk')
         s3 = session.client('s3')
