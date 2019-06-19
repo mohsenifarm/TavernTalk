@@ -54,8 +54,7 @@ def add_profile_photo(request, profile_id):
     photo_file = request.FILES.get('photo-file', None)
     print('photo_file')
     if photo_file:
-        session = boto3.Session(profile_name='taverntalk')
-        s3 = session.client('s3')
+        s3 = boto3.client('s3')
         key = uuid.uuid4().hex[:6] + photo_file.name[photo_file.name.rfind('.'):]
         try:
             s3.upload_fileobj(photo_file, BUCKET, key)
@@ -70,8 +69,7 @@ def add_profile_photo(request, profile_id):
 def add_character_photo(request, character_id):
     photo_file = request.FILES.get('photo-file', None)
     if photo_file:
-        session = boto3.Session(profile_name='taverntalk')
-        s3 = session.client('s3')
+        s3 = boto3.client('s3')
         key = uuid.uuid4().hex[:6] + photo_file.name[photo_file.name.rfind('.'):]
         try:
             s3.upload_fileobj(photo_file, BUCKET, key)
@@ -85,8 +83,7 @@ def add_character_photo(request, character_id):
 def add_character_sheet_photo(request, character_id):
     photo_file = request.FILES.get('photo-file', None)
     if photo_file:
-        session = boto3.Session(profile_name='taverntalk')
-        s3 = session.client('s3')
+        s3 = boto3.client('s3')
         key = uuid.uuid4().hex[:6] + photo_file.name[photo_file.name.rfind('.'):]
         try:
             s3.upload_fileobj(photo_file, BUCKET, key)
