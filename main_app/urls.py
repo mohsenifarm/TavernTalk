@@ -20,4 +20,8 @@ urlpatterns = [
     path('games/create/', views.GameCreate.as_view(), name='games_create'),
     path('games/<int:pk>/update/', views.GameUpdate.as_view(), name='games_update'),
     path('games/<int:pk>/delete/', views.GameDelete.as_view(), name='games_delete'),
+    path('games/<int:game_id>/join/', views.games_join, name='games_join'),
+    path('games/<int:game_id>/join/yes', views.games_join_yes, name='games_join_yes'),
+    path('games/<int:game_id>/kick/<int:character_id>', views.games_kick, name="games_kick"),
+    path('games/<int:game_id>/leave/<int:character_id>', views.games_leave, name="games_leave"),
 ]
