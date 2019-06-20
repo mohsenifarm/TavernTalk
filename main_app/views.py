@@ -10,6 +10,7 @@ from .models import Profile, Profile_photo, Meeting, Character, Game, Game_photo
 from .forms import MeetingForm
 from .forms import CommentForm
 
+import mimetypes
 import uuid
 import boto3
 
@@ -55,20 +56,41 @@ def profile(request):
 def add_profile_photo(request, profile_id):
     print("<<<<<<<<<<<<<<")
     profile_photo = Profile_photo.objects.all()
+    profile = Profile.objects.get(id=profile_id)
 
+    # photo_file = request.FILES.get('photo-file', None)
+    # # mimetype = mimetypes.guess_type(photo_file)
+    # if photo_file:
+    #     s3 = boto3.client('s3')
+    #     key = uuid.uuid4().hex[:6] + photo_file.name[photo_file.name.rfind('.'):]
+    #     # try:
+    #     s3.upload_fileobj(photo_file, BUCKET, key)
+    #     url = f"{S3_BASE_URL}{BUCKET}/{key}"
+    #     photo = Profile_photo(url=url, profile=request.user)
+    #     print('photo assining to model')
+    #     photo.save()
+
+        # except:
+            # print('An error occurred uploading file to S3')
+
+        # s3.upload_file(File=photo_file, Filename=photo_file.name, Bucket=BUCKET, Key=key, ExtraArgs={"ACL": 'public-read'})
+        # url = f"{S3_BASE_URL}{BUCKET}/{key}"
+        # # should change name from profile to user
+        # photo = Profile_photo(url=url, profile=request.user)
+        # print('photo assining to model')
+        # photo.save()    
     photo_file = request.FILES.get('photo-file', None)
     if photo_file:
         s3 = boto3.client('s3')
         key = uuid.uuid4().hex[:6] + photo_file.name[photo_file.name.rfind('.'):]
-        try:
-            s3.upload_fileobj(photo_file, BUCKET, key)
-            url = f"{S3_BASE_URL}{BUCKET}/{key}"
-            photo = Profile_photo(url=url, profile=profile_id)
-            print('photo assining to model')
-            photo.save()
-        except:
-            print('An error occurred uploading file to S3')
-    return redirect('profile_page')
+        # try:
+        s3.upload_fileobj(photo_file, BUCKET, key)
+        url = f"{S3_BASE_URL}{BUCKET}/{key}"
+        photo = Profile_photo(url=url, profile=profile)
+        photo.save()
+    # except:
+        print('An error occurred uploading file to S3')    
+    return redirect('home')
 
 
 def add_character_photo(request, character_id):
