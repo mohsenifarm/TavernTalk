@@ -5,6 +5,7 @@
     <div class="row">
         <div class="col s8 offset-s2">
             <h1>Welcome <em>{{user.username}}</em></h1>
+            <h3>{{profile.id}}</h3>
         </div>
     </div>
 
@@ -15,7 +16,7 @@
     <div class="card-panel teal-text center-align">No Photos Uploaded</div>
     {% endfor %}
     
-    <form action="{% url 'profile_photo' %}" enctype="multipart/form-data" method="POST" class="card-panel">
+    <form action="{% url 'profile_photo' profile.id %}" enctype="multipart/form-data" method="POST" class="card-panel">
         {% csrf_token %}
         <input type="file" name="photo-file">
         <br><br>

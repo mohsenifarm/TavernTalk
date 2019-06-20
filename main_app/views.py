@@ -6,7 +6,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth import login
 from django.views.generic.edit import CreateView
-from .models import Profile, Meeting, Character, Game, Game_photo, Character_photo, Character_sheet_photo, Comment, Profile_photo
+from .models import Profile, Profile_photo, Meeting, Character, Game, Game_photo , Character_photo, Character_sheet_photo, Comment
 from .forms import MeetingForm
 from .forms import CommentForm
 
@@ -28,6 +28,7 @@ def profile(request):
     user = request.user
     gmgames = Game.objects.filter(admin=user.id)
     characters = Character.objects.filter(player=user.id)
+    profile = Profile.objects.get(user = user)
     playergames = []
     for character in characters:
         if character.game:
@@ -47,23 +48,22 @@ def profile(request):
                 meetings.append([game, session])
     for meeting in meetings:
         print(meeting[0].name)
-    return render(request, 'profile.html',{'gmgames': gmgames, 'characters': characters, 'meetings': meetings, 'playergames': playergames})
+    return render(request, 'profile.html',{'gmgames': gmgames, 'characters': characters, 'meetings': meetings, 'playergames': playergames, 'profile': profile})
   
 
 def add_profile_photo(request, profile_id):
     photo_file = request.FILES.get('photo-file', None)
-    print('photo_file')
     if photo_file:
         s3 = boto3.client('s3')
         key = uuid.uuid4().hex[:6] + photo_file.name[photo_file.name.rfind('.'):]
         try:
             s3.upload_fileobj(photo_file, BUCKET, key)
             url = f"{S3_BASE_URL}{BUCKET}/{key}"
-            photo = Profile_photo(url=url, profile=profile_id)
-            photo.save()
+            photos = Profile_photo(url=url, profile_id=profile_id)
+            photos.save()
         except:
             print('An error occurred uploading file to S3')
-    return redirect('profile', profile=profile_id)
+    return redirect('profile_page')
 
 
 def add_character_photo(request, character_id):
@@ -115,6 +115,8 @@ def signup(request):
         form = UserCreationForm(request.POST)
         if form.is_valid():
             user = form.save()
+            profile = Profile(user=user)
+            profile.save()
             login(request, user)
             return redirect('profile_page')
         else:
