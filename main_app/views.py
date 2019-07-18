@@ -1,4 +1,3 @@
-
 from django.shortcuts import render, redirect
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.contrib.auth.forms import UserCreationForm
@@ -6,7 +5,9 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth import login
 from django.views.generic.edit import CreateView
-from .models import Profile, Profile_photo, Meeting, Character, Game, Game_photo , Character_photo, Character_sheet_photo, Comment
+import datetime as dt
+from datetime import date
+from .models import Profile, Meeting, Character, Game, Game_photo, Character_photo, Character_sheet_photo, Comment, Profile_photo
 from .forms import MeetingForm
 from .forms import CommentForm
 
@@ -41,17 +42,17 @@ def profile(request):
         sessions = Meeting.objects.filter(game=game.id)
         if sessions:
             for session in sessions:
-                meetings.append([game, session])
+                if (session.date > date.today()):
+                    meetings.append([game, session])
     for game in playergames:
         sessions = Meeting.objects.filter(game=game.id)
         if sessions:
             for session in sessions:
-                meetings.append([game, session])
-
-    for meeting in meetings:
-        print(meeting[0].name)
-    return render(request, 'profile.html',{'gmgames': gmgames, 'characters': characters, 'meetings': meetings, 'playergames': playergames, 'profile': profile})
-
+                if (session.date > date.today()):
+                    meetings.append([game, session])
+    meetings = meetings[::-1]
+    return render(request, 'profile.html',{'gmgames': gmgames, 'characters': characters, 'meetings': meetings, 'playergames': playergames})
+  
 
 def add_profile_photo(request, profile_id):
     print("<<<<<<<<<<<<<<")
